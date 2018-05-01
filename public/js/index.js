@@ -8,11 +8,12 @@
    //   text: "Sent from client to server"
    // });
 
-   socket.emit('createMessage' , { //sends a message to the server
-     from : "newMessage@gmail.com",
-     text: "Sent from client to server",
-     createdAt : Date.now()
-   });
+// No need of that, bcause io.emit emits the message to every connected user
+   // socket.emit('createMessage' , { //sends a message to the server
+   //   from : "newMessage@gmail.com",
+   //   text: "Sent from client to server",
+   //   createdAt : Date.now()
+   // });
  });
 
  socket.on('disconnect', function () { // Error functions won't work on mobile browers or explorer!
@@ -22,6 +23,7 @@
  // socket.on('newEmail' , function(email) { //
  //   console.log('New Email' , email);
  // });
+
 
  socket.on('newMessage' , function(message) { // gets the message from the server - message form another user! chat
    console.log('New message' , message);

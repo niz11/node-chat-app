@@ -33,18 +33,25 @@ io.on('connection' , (socket) => { //
   //   createdAt: 23
   // }); //Calling a method on socket. emit on the client and the server to emit events! instead on listiong to event -creating an event
 
-  socket.emit('newMessage' , { //custom event
-    from : "newMessage" ,
-    text: "newMessage" ,
-    createdAt : 1
-  });
+// // No need of that, bcause io.emit emits the message to every connected user
+//   socket.emit('newMessage' , { //custom event
+//     from : "newMessage" ,
+//     text: "newMessage" ,
+//     createdAt : 1
+//   });
   // For events we usually call soecket.on. io.on is a speciel mothod.
   // socket.on('createEmail' , (newEmail) => { // event that will be fired when the user sends an email to the server
   //   console.log('createEmail' , newEmail);
   // });
 
-  socket.on('createMessage' , (newMessage) => { // event that will be fired when the user sends a message to the server. listening to newMessage event
-    console.log('newMessage' , newMessage);
+//socket.io emit to a single! connection , io.imit - imits to Every! single conection
+  socket.on('createMessage' , (message) => { // event that will be fired when the user sends a message to the server. listening to newMessage event
+    console.log('newMessage' , message);
+    io.emit('newMessage', {
+      from : message.from ,
+      text: message.text ,
+      createdAt : new Date().getTime()
+    });
   });
 
   socket.on('disconnect' , () => {
