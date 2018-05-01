@@ -27,6 +27,21 @@ app.use(express.static(publicPath));
 io.on('connection' , (socket) => { //
   console.log('New user connected'); //The message would come when I open the browser
 
+
+  socket.emit('newMessage' , { // This message will be sent only to the new conencted user
+    from: 'Admin' ,
+    text: 'Welcome to the chat',
+    createdAt : new Date().getTime()
+  })
+
+    // socket.broadcast.emit - the event will be sent to all users but myself! the new joined user
+  socket.broadcast.emit('newMessage' , {
+      from: 'Admin' ,
+      text: 'New user has joined the chat',
+      createdAt : new Date().getTime()
+  });
+
+
   // socket.emit('newEmail' , { //The second parameter - here object will be sent with the newemail. The deat will bee send to index.html! client- to  socket.on as the first argument
   //   from: "Mike@gmail.com" ,
   //   text: "Banana",
@@ -46,13 +61,15 @@ io.on('connection' , (socket) => { //
 
 //socket.io emit to a single! connection , io.imit - imits to Every! single conection
   socket.on('createMessage' , (message) => { // event that will be fired when the user sends a message to the server. listening to newMessage event
-    console.log('newMessage' , message);
+    console.log('createMessage' , message);
     io.emit('newMessage', {
       from : message.from ,
       text: message.text ,
       createdAt : new Date().getTime()
     });
   });
+
+
 
   socket.on('disconnect' , () => {
     console.log('User was Disconnected');

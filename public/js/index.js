@@ -28,3 +28,4 @@
  socket.on('newMessage' , function(message) { // gets the message from the server - message form another user! chat
    console.log('New message' , message);
  });
+ 
