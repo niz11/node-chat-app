@@ -3,6 +3,8 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
+
+const {generateMessage} = require('./utils/message.js');
 const publicPath = path.join(__dirname, '../public'); // path takes away the .. from the end path. - to reach my frontend files
 //console.log(publicPath);
 const port = process.env.PORT || 3000;
@@ -27,19 +29,11 @@ app.use(express.static(publicPath));
 io.on('connection' , (socket) => { //
   console.log('New user connected'); //The message would come when I open the browser
 
-
-  socket.emit('newMessage' , { // This message will be sent only to the new conencted user
-    from: 'Admin' ,
-    text: 'Welcome to the chat',
-    createdAt : new Date().getTime()
-  })
+// This message will be sent only to the new conencted user
+  socket.emit('newMessage' , generateMessage('Admin' ,'Welcome to the chat'));
 
     // socket.broadcast.emit - the event will be sent to all users but myself! the new joined user
-  socket.broadcast.emit('newMessage' , {
-      from: 'Admin' ,
-      text: 'New user has joined the chat',
-      createdAt : new Date().getTime()
-  });
+  socket.broadcast.emit('newMessage' , generateMessage('Admin' ,'New user joined the server '));
 
 
   // socket.emit('newEmail' , { //The second parameter - here object will be sent with the newemail. The deat will bee send to index.html! client- to  socket.on as the first argument
@@ -62,11 +56,7 @@ io.on('connection' , (socket) => { //
 //socket.io emit to a single! connection , io.imit - imits to Every! single conection
   socket.on('createMessage' , (message) => { // event that will be fired when the user sends a message to the server. listening to newMessage event
     console.log('createMessage' , message);
-    io.emit('newMessage', {
-      from : message.from ,
-      text: message.text ,
-      createdAt : new Date().getTime()
-    });
+    io.emit('newMessage', generateMessage(message.from , message.text));
   });
 
 
