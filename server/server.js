@@ -34,8 +34,6 @@ io.on('connection' , (socket) => { //
 
     // socket.broadcast.emit - the event will be sent to all users but myself! the new joined user
   socket.broadcast.emit('newMessage' , generateMessage('Admin' ,'New user joined the server '));
-
-
   // socket.emit('newEmail' , { //The second parameter - here object will be sent with the newemail. The deat will bee send to index.html! client- to  socket.on as the first argument
   //   from: "Mike@gmail.com" ,
   //   text: "Banana",
@@ -54,9 +52,10 @@ io.on('connection' , (socket) => { //
   // });
 
 //socket.io emit to a single! connection , io.imit - imits to Every! single conection
-  socket.on('createMessage' , (message) => { // event that will be fired when the user sends a message to the server. listening to newMessage event
+  socket.on('createMessage' , (message , callback) => { // event that will be fired when the user sends a message to the server. listening to newMessage event
     console.log('createMessage' , message);
     io.emit('newMessage', generateMessage(message.from , message.text));
+    callback('This is from the Server');
   });
 
 

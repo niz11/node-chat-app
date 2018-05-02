@@ -1,3 +1,4 @@
+//eknoledgments - an answer from the server to client(or opposite) that confirms the sented data is valid - if invalid? - tells the user
 //socket is really important variable! the whole socket connection let us comunicate with events!
  var socket = io(); //avilable bacasue we loaded it up above! It makes a req from the client to the server to open up a web socket! and keep it alive
  socket.on('connect' , function () { //Event will fire once a client enter the website - both derection
@@ -27,5 +28,19 @@
 
  socket.on('newMessage' , function(message) { // gets the message from the server - message form another user! chat
    console.log('New message' , message);
+   var li = $('<li></li>');
+   li.text(`${message.from} : ${message.text}`);
+
+   $('#messages').append(li);
  });
- 
+
+ jQuery('#message-form').on('submit' , function(e) {
+   e.preventDefault();
+
+   socket.emit('createMessage' , {
+     from : 'User',
+     text: $('[name=message]').val()
+   } , function() {
+
+   });
+ });
