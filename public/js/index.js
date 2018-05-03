@@ -1,3 +1,5 @@
+//emit = launch
+// socket.emit - creates a new event
 //eknoledgments - an answer from the server to client(or opposite) that confirms the sented data is valid - if invalid? - tells the user
 //socket is really important variable! the whole socket connection let us comunicate with events!
  var socket = io(); //avilable bacasue we loaded it up above! It makes a req from the client to the server to open up a web socket! and keep it alive
@@ -28,11 +30,23 @@
 
  socket.on('newMessage' , function(message) { // gets the message from the server - message form another user! chat
    console.log('New message' , message);
-   var li = $('<li></li>');
+
+   var li = $('<li class="list-group-item"></li>');
    li.text(`${message.from} : ${message.text}`);
 
-   $('#messages').append(li);
+   $('#list-group').append(li);
  });
+
+ socket.on('newLocationMessage' , function(message) {
+   console.log('New location message' , message);
+   var li = $('<li class="list-group-item"></li>');
+   li.text(`${message.from}: `);
+   var a = $('<a class="location" target="_blank">My current location</a>');
+   a.attr('href' , message.url);
+   $(li).append(a);
+   $('#list-group').append(li);
+
+ })
 
  jQuery('#message-form').on('submit' , function(e) {
    e.preventDefault();
@@ -43,4 +57,22 @@
    } , function() {
 
    });
+ });
+
+ var locationButton = jQuery('#send-location');
+//jQuery('#send-location').on ===
+ locationButton.on('click' , function() {
+   if (!navigator.geolocation) {
+     return alert('geolocation not supported by your browser');
+   }
+   navigator.geolocation.getCurrentPosition(function(position) {
+     console.log(position);
+     socket.emit('createLocationMessage' ,{
+       latitude : position.coords.latitude,
+       longitude : position.coords.longitude
+     });
+   }, function() {
+     alert('Unable to share location!');
+   })
+
  });

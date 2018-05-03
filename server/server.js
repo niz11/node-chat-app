@@ -4,7 +4,7 @@ const express = require('express');
 const socketIO = require('socket.io');
 
 
-const {generateMessage} = require('./utils/message.js');
+const {generateMessage, generateLocationMessage} = require('./utils/message.js');
 const publicPath = path.join(__dirname, '../public'); // path takes away the .. from the end path. - to reach my frontend files
 //console.log(publicPath);
 const port = process.env.PORT || 3000;
@@ -58,7 +58,9 @@ io.on('connection' , (socket) => { //
     callback('This is from the Server');
   });
 
-
+  socket.on('createLocationMessage' , (coords) => {
+    io.emit('newLocationMessage' , generateLocationMessage('Admin' , coords.latitude , coords.longitude));
+  });
 
   socket.on('disconnect' , () => {
     console.log('User was Disconnected');
