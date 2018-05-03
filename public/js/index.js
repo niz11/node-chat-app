@@ -31,31 +31,34 @@
  socket.on('newMessage' , function(message) { // gets the message from the server - message form another user! chat
    console.log('New message' , message);
 
-   var li = $('<li class="list-group-item"></li>');
+   var li = $('<li></li>');
    li.text(`${message.from} : ${message.text}`);
 
-   $('#list-group').append(li);
+   $('#messages').append(li);
  });
 
  socket.on('newLocationMessage' , function(message) {
-   console.log('New location message' , message);
-   var li = $('<li class="list-group-item"></li>');
+   //console.log('New location message' , message);
+   var li = $('<li></li>');
    li.text(`${message.from}: `);
-   var a = $('<a class="location" target="_blank">My current location</a>');
-   a.attr('href' , message.url);
-   $(li).append(a);
-   $('#list-group').append(li);
 
- })
+   var a = $('<a target="_blank">My current location</a>');
+   a.attr('href' , message.url);
+
+   $(li).append(a);
+   $('#messages').append(li);
+
+ });
 
  jQuery('#message-form').on('submit' , function(e) {
    e.preventDefault();
+   var messageTextbox = $('[name=message]'); //To save re-writing code!
 
    socket.emit('createMessage' , {
      from : 'User',
-     text: $('[name=message]').val()
+     text: messageTextbox.val()
    } , function() {
-
+     messageTextbox.val(''); // Cleaning the message text field after it was sent
    });
  });
 
@@ -65,13 +68,18 @@
    if (!navigator.geolocation) {
      return alert('geolocation not supported by your browser');
    }
+
+   locationButton.attr('disabled', 'disabled').text('Sending location...'); //Disabling buttom while fetching the data - and giving the correct message
+
    navigator.geolocation.getCurrentPosition(function(position) {
-     console.log(position);
+    //console.log(position);
+    locationButton.removeAttr('disabled').text('Send location');//anabling the button again
      socket.emit('createLocationMessage' ,{
        latitude : position.coords.latitude,
        longitude : position.coords.longitude
      });
    }, function() {
+     locationButton.removeAttr('disabled').text('Send location');//anabling the button again. And back to original text
      alert('Unable to share location!');
    })
 
