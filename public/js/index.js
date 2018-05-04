@@ -30,7 +30,7 @@
 
  socket.on('newMessage' , function(message) { // gets the message from the server - message form another user! chat
    //console.log('New message' , message);
-   var formatedTime = moment(message.createdAt).format('h:mm a');
+   var formatedTime = 2//moment(message.createdAt).format('h:mm a');
    // var li = $('<li></li>');
    // li.text(`${message.from} ${formatedTime}: ${message.text}`);
    //
@@ -48,7 +48,7 @@
 
  socket.on('newLocationMessage' , function(message) {
    //console.log('New location message' , message);
-    var formatedTime = moment(message.createdAt).format('h:mm a');
+    var formatedTime = 2//moment(message.createdAt).format('h:mm a');
    // var li = $('<li></li>');
    // li.text(`${message.from} ${formatedTime}: `);
    //
