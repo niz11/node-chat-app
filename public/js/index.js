@@ -36,7 +36,7 @@
    //
    // $('#messages').append(li);
    // Here starting wo work with a tamplate - tamplate in idex.to_html
-   var tamplate = $('#message-template').html();
+   var template = $('#message-template').html();
    var html = Mustache.render(template , {
      text: message.text,
      from: message.from,
@@ -58,7 +58,7 @@
    // $(li).append(a);
    // $('#messages').append(li);
    //using a tamplate starting here - tamplate in idex.to_html
-   var tamplate = $('#location-message-template').html();
+   var template = $('#location-message-template').html();
    var html = Mustache.render(template , {
      url: message.url,
      from: message.from,
