@@ -31,23 +31,41 @@
  socket.on('newMessage' , function(message) { // gets the message from the server - message form another user! chat
    //console.log('New message' , message);
    var formatedTime = moment(message.createdAt).format('h:mm a');
-   var li = $('<li></li>');
-   li.text(`${message.from} ${formatedTime}: ${message.text}`);
+   // var li = $('<li></li>');
+   // li.text(`${message.from} ${formatedTime}: ${message.text}`);
+   //
+   // $('#messages').append(li);
+   // Here starting wo work with a tamplate - tamplate in idex.to_html
+   var tamplate = $('#message-tamplate').html();
+   var html = Mustache.render(tamplate , {
+     text: message.text,
+     from: message.from,
+     createdAt: formatedTime
+   }); // renders our tamplate with the values I send it
 
-   $('#messages').append(li);
+   $('#messages').append(html);
  });
 
  socket.on('newLocationMessage' , function(message) {
    //console.log('New location message' , message);
-   var formatedTime = moment(message.createdAt).format('h:mm a');
-   var li = $('<li></li>');
-   li.text(`${message.from} ${formatedTime}: `);
+    var formatedTime = moment(message.createdAt).format('h:mm a');
+   // var li = $('<li></li>');
+   // li.text(`${message.from} ${formatedTime}: `);
+   //
+   // var a = $('<a target="_blank">My current location</a>');
+   // a.attr('href' , message.url);
+   //
+   // $(li).append(a);
+   // $('#messages').append(li);
+   //using a tamplate starting here - tamplate in idex.to_html
+   var tamplate = $('#location-message-tamplate').html();
+   var html = Mustache.render(tamplate , {
+     url: message.url,
+     from: message.from,
+     createdAt: formatedTime
+   }); // renders our tamplate with the values I send it
 
-   var a = $('<a target="_blank">My current location</a>');
-   a.attr('href' , message.url);
-
-   $(li).append(a);
-   $('#messages').append(li);
+   $('#messages').append(html);
 
  });
 
