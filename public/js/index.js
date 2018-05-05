@@ -3,6 +3,26 @@
 //eknoledgments - an answer from the server to client(or opposite) that confirms the sented data is valid - if invalid? - tells the user
 //socket is really important variable! the whole socket connection let us comunicate with events!
  var socket = io(); //avilable bacasue we loaded it up above! It makes a req from the client to the server to open up a web socket! and keep it alive
+function scrollToBottom(){
+  //selektors
+  var messages = $('#messages');
+  var newMessage = messages.children('li:last-child');//Choses the last messages, notice we call scrollToBottom after we add the new Message!
+  //Heights - Dom properties! clientHeight,scrollTop,scrollHeight,innerHeight
+  var clientHeight = messages.prop('clientHeight');
+  //console.log(clientHeight);
+  var scrollTop = messages.prop('scrollTop');
+  //console.log(scrollTop);
+  var scrollHeight = messages.prop('scrollHeight');
+  //console.log(scrollHeight);
+  var newMessageHeight = newMessage.innerHeight(); //height of the new message
+  //console.log(newMessageHeight);
+  var lastMessageHeight = newMessage.prev().innerHeight(); //height of the message one before the new one
+  //console.log(lastMessageHeight);
+
+  if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight)
+    messages.scrollTop(scrollHeight); // Will scroll up to the bottom
+}
+
  socket.on('connect' , function () { //Event will fire once a client enter the website - both derection
    console.log('connected to server');
 
@@ -44,6 +64,8 @@
    }); // renders our tamplate with the values I send it
 
    $('#messages').append(html);
+
+   scrollToBottom();
  });
 
  socket.on('newLocationMessage' , function(message) {
@@ -67,6 +89,7 @@
 
    $('#messages').append(html);
 
+   scrollToBottom();
  });
 
  jQuery('#message-form').on('submit' , function(e) {
