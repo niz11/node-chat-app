@@ -24,7 +24,7 @@ function scrollToBottom(){
 }
 
  socket.on('connect' , function () { //Event will fire once a client enter the website - both derection
-   console.log('connected to server');
+   //console.log('connected to server');
 
    // socket.emit('createEmail' , { //sends an email to the server
    //   to : "text@gmail.com",
@@ -37,6 +37,18 @@ function scrollToBottom(){
    //   text: "Sent from client to server",
    //   createdAt : Date.now()
    // });
+   ////////////////////////-----------------------------------Hrre sarting the connecting to rooms code-------------------
+   var params = $.deparam(window.location.search); //window bring us back the vlaues that the user loged in with, and deparam makes it an object out of it
+
+   socket.emit('join' , params , function(error) { //Sending an event to the front-end. error if the user didn't fill in the log in data
+    if (error){
+      alert(error);
+      //take him back to log in page
+      window.location.href="/";
+    } else {
+      console.log('No error');
+    }
+   });
  });
 
  socket.on('disconnect', function () { // Error functions won't work on mobile browers or explorer!

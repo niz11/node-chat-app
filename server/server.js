@@ -5,6 +5,7 @@ const socketIO = require('socket.io');
 
 
 const {generateMessage, generateLocationMessage} = require('./utils/message.js');
+const {isRealString} = require('./utils/validation.js');
 const publicPath = path.join(__dirname, '../public'); // path takes away the .. from the end path. - to reach my frontend files
 //console.log(publicPath);
 const port = process.env.PORT || 3000;
@@ -29,11 +30,7 @@ app.use(express.static(publicPath));
 io.on('connection' , (socket) => { //
   console.log('New user connected'); //The message would come when I open the browser
 
-// This message will be sent only to the new conencted user
-  socket.emit('newMessage' , generateMessage('Admin' ,'Welcome to the chat'));
 
-    // socket.broadcast.emit - the event will be sent to all users but myself! the new joined user
-  socket.broadcast.emit('newMessage' , generateMessage('Admin' ,'New user joined the server '));
   // socket.emit('newEmail' , { //The second parameter - here object will be sent with the newemail. The deat will bee send to index.html! client- to  socket.on as the first argument
   //   from: "Mike@gmail.com" ,
   //   text: "Banana",
@@ -51,6 +48,24 @@ io.on('connection' , (socket) => { //
   //   console.log('createEmail' , newEmail);
   // });
 
+  socket.on('join' , (params, callback) => {
+    if (!isRealString(params.room) || !isRealString(params.name))
+      callback('Room name and name are required');
+    //Now making usre that only people from the save room will send and recive messages only to the room
+    socket.join(params.room); // Special room for each room name! So easy
+    //socket.leave(params.room) // to cick someone form the room
+    // Now we need to change the emits, usw. To send only to the members of the room and not all users.
+    // io.emit -> io.to('room name').emit - io.to - to send only to users that in this room
+    // socket.broadcast.emit - > socket.broadcast.to('room name').emit
+    // socket.emit
+
+    // This message will be sent only to the new conencted user
+      socket.emit('newMessage' , generateMessage('Admin' ,'Welcome to the chat'));
+    // socket.broadcast.emit - the event will be sent to all users but myself! the new joined user
+      socket.broadcast.to(params.room).emit('newMessage' , generateMessage('Admin' ,`${params.name} has joined`));
+    callback(); // because the callback function has an error as parameter, if we send it back like this' it means no error acured and th data is ok.
+  });
+
 //socket.io emit to a single! connection , io.imit - imits to Every! single conection
   socket.on('createMessage' , (message , callback) => { // event that will be fired when the user sends a message to the server. listening to newMessage event
     console.log('createMessage' , message);
@@ -59,7 +74,7 @@ io.on('connection' , (socket) => { //
   });
 
   socket.on('createLocationMessage' , (coords) => {
-    io.emit('newLocationMessage' , generateLocationMessage('Uder' , coords.latitude , coords.longitude));
+    io.emit('newLocationMessage' , generateLocationMessage('User' , coords.latitude , coords.longitude));
   });
 
   socket.on('disconnect' , () => {
