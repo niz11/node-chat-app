@@ -3,7 +3,7 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
-
+const {Users} = require('./utils/users');
 const {generateMessage, generateLocationMessage} = require('./utils/message.js');
 const {isRealString} = require('./utils/validation.js');
 const publicPath = path.join(__dirname, '../public'); // path takes away the .. from the end path. - to reach my frontend files
@@ -19,7 +19,7 @@ var app = express();
 //ready to expect new connectios!
 //We have to run some javascript code to initiate the process. We we intigrated the socket.io server we also get accsses to a few more things - like a new libary(make it easy to work on socket.io on the client) + route - it's under - localhost:3000/socket.io/socket.io.js
 // localhost:3000/socket.io/socket.io.js - conatins on the code we need on the client to make the connections!
-
+var users = new Users(); //New class of users
 
 // app.get('/' , (req , res) => {
 //   res.sendFile(publicPath + '/index.html');
@@ -50,7 +50,7 @@ io.on('connection' , (socket) => { //
 
   socket.on('join' , (params, callback) => {
     if (!isRealString(params.room) || !isRealString(params.name))
-      callback('Room name and name are required');
+      return callback('Room name and name are required');
     //Now making usre that only people from the save room will send and recive messages only to the room
     socket.join(params.room); // Special room for each room name! So easy
     //socket.leave(params.room) // to cick someone form the room
@@ -58,7 +58,10 @@ io.on('connection' , (socket) => { //
     // io.emit -> io.to('room name').emit - io.to - to send only to users that in this room
     // socket.broadcast.emit - > socket.broadcast.to('room name').emit
     // socket.emit
-
+    users.removeUser(socket.id); // before joining a users to a room , we delete them from any other room they were
+    users.addUser(socket.id , params.name , params.room); // socket.id has the users id!
+    //Now emits the event to the user - to chat.js
+    io.to(params.room).emit('updateUserList' , users.getUserList(params.room)); //Sends only to the users at this room! updating thier user list.
     // This message will be sent only to the new conencted user
       socket.emit('newMessage' , generateMessage('Admin' ,'Welcome to the chat'));
     // socket.broadcast.emit - the event will be sent to all users but myself! the new joined user
@@ -78,7 +81,12 @@ io.on('connection' , (socket) => { //
   });
 
   socket.on('disconnect' , () => {
-    console.log('User was Disconnected');
+    //console.log('User was Disconnected');
+    var user = users.removeUser(socket.id);
+
+    if (user) //if a user exists
+    io.to(user.room).emit('updateUserList' , users.getUserList(user.room)); // Will remove the user from list when leaving - preventing multipling from the same user
+    io.to(user.room).emit('newMessage' , generateMessage('Admin' , `${user.name} has left the room`));
   })
 });
 

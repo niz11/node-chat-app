@@ -55,6 +55,17 @@ function scrollToBottom(){
    console.log('Disconnected from server');
  });
 
+socket.on('updateUserList' , function (users) {
+  //console.log('Users list' , users);
+  var ol = $('<ol></ol>');//Creating an ordered list to show the rooms users list to the room
+
+  users.forEach(function (user) {
+    ol.append($('<li></li>').text(user)); //add to each li the text filed with the users name!
+  });
+
+  $('#users').html(ol); // wiping the list and replacing it with the new version
+});
+
  // socket.on('newEmail' , function(email) { //
  //   console.log('New Email' , email);
  // });
