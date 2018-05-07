@@ -39,7 +39,7 @@ function scrollToBottom(){
    // });
    ////////////////////////-----------------------------------Hrre sarting the connecting to rooms code-------------------
    var params = $.deparam(window.location.search); //window bring us back the vlaues that the user loged in with, and deparam makes it an object out of it
-
+   params.room = (params.room).toLowerCase(); // Make sure rooms names is not lowerkeys sensetive
    socket.emit('join' , params , function(error) { //Sending an event to the front-end. error if the user didn't fill in the log in data
     if (error){
       alert(error);

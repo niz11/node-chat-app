@@ -49,8 +49,11 @@ io.on('connection' , (socket) => { //
   // });
 
   socket.on('join' , (params, callback) => {
+    var checkUsersName = users.getUserList(params.room);
     if (!isRealString(params.room) || !isRealString(params.name))
       return callback('Room name and name are required');
+    if (checkUsersName.indexOf(params.name) != -1)
+      return callback('Username is already in use');
     //Now making usre that only people from the save room will send and recive messages only to the room
     socket.join(params.room); // Special room for each room name! So easy
     //socket.leave(params.room) // to cick someone form the room
@@ -60,6 +63,7 @@ io.on('connection' , (socket) => { //
     // socket.emit
     users.removeUser(socket.id); // before joining a users to a room , we delete them from any other room they were
     users.addUser(socket.id , params.name , params.room); // socket.id has the users id!
+      //return callback('Room name and name are required');
     //Now emits the event to the user - to chat.js
     io.to(params.room).emit('updateUserList' , users.getUserList(params.room)); //Sends only to the users at this room! updating thier user list.
     // This message will be sent only to the new conencted user
@@ -91,9 +95,10 @@ io.on('connection' , (socket) => { //
     //console.log('User was Disconnected');
     var user = users.removeUser(socket.id);
 
-    if (user) //if a user exists
+    if (user){ //if a user exists
     io.to(user.room).emit('updateUserList' , users.getUserList(user.room)); // Will remove the user from list when leaving - preventing multipling from the same user
     io.to(user.room).emit('newMessage' , generateMessage('Admin' , `${user.name} has left the room`));
+    };
   })
 });
 
