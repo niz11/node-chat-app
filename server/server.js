@@ -71,13 +71,20 @@ io.on('connection' , (socket) => { //
 
 //socket.io emit to a single! connection , io.imit - imits to Every! single conection
   socket.on('createMessage' , (message , callback) => { // event that will be fired when the user sends a message to the server. listening to newMessage event
-    console.log('createMessage' , message);
-    io.emit('newMessage', generateMessage(message.from , message.text));
+    //console.log('createMessage' , message);
+    var user = users.getUser(socket.id);
+
+    if (user && isRealString(message.text)) { //If user exsists and his message is valid
+        io.to(user.room).emit('newMessage', generateMessage(user.name , message.text));
+    }
     callback('This is from the Server');
   });
 
   socket.on('createLocationMessage' , (coords) => {
-    io.emit('newLocationMessage' , generateLocationMessage('User' , coords.latitude , coords.longitude));
+    var user = users.getUser(socket.id); //current user
+
+    if (user)
+    io.to(user.room).emit('newLocationMessage' , generateLocationMessage(user.name , coords.latitude , coords.longitude));
   });
 
   socket.on('disconnect' , () => {
